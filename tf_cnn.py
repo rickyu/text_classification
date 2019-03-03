@@ -16,7 +16,7 @@ import subprocess
 
 import tensorflow as tf
 import tensorflow.contrib.keras as kr
-import jieba as jb
+#import jieba as jb
 from tensorflow.contrib import learn
 
 
@@ -276,17 +276,17 @@ def text_cnn_train():
     generate_words_dict_info(config.base_path)
 
     # 载入训练集与验证集
-    print "Loading training and validation data..."
+    print("Loading training and validation data...")
     start_time = int(time.time())
     x_train, y_train, x_val, y_val = process_file(config.base_path, config.seq_length)
-    print "Time usage:", int(time.time()) - start_time
+    print("Time usage:", int(time.time()) - start_time)
 
     # 创建session
     session = tf.Session()
     session.run(tf.global_variables_initializer())
     writer.add_graph(session.graph)
 
-    print 'Training and evaluating...'
+    print('Training and evaluating...')
     start_time = int(time.time())
     total_batch = 0  # 总批次
     best_acc_val = 0.0  # 最佳验证集准确率
@@ -295,7 +295,7 @@ def text_cnn_train():
 
     flag = False
     for epoch in range(config.num_epochs):
-        print 'Epoch:', epoch + 1
+        print('Epoch:', epoch + 1)
         batch_train = batch_iter(x_train, y_train, config.batch_size)
         for x_batch, y_batch in batch_train:
             feed_dict = feed_data(model, x_batch, y_batch, config.dropout_keep_prob)
@@ -330,7 +330,7 @@ def text_cnn_train():
 
             if total_batch - last_improved > require_improvement:
                 # 验证集正确率长期不提升，提前结束训练
-                print "No optimization for a long time, auto-stopping..."
+                print("No optimization for a long time, auto-stopping...")
                 flag = True
                 break  # 跳出循环
         if flag:  # 同上
@@ -372,10 +372,10 @@ def load_tf_session():
         saver = tf.train.Saver()
         saver.restore(sess=session, save_path=config.save_mod)
         anti_text_tf_session = session
-        print 'load time %ss' % (int(time.time()) - start_time)
+        print('load time %ss' % (int(time.time()) - start_time))
         return session
-    except Exception, e:
-        print str(e)
+    except Exception as e:
+        print(str(e))
         return None
 
 
@@ -395,11 +395,11 @@ def init_tf_cnn():
 
     # 生成配置文件
     t_cnn_cfg = TCNNConfig()
-    print 'create CNN config ok'
+    print('create CNN config ok')
 
     # 生成CNN模型
     t_cnn_mod = TextCNN(t_cnn_cfg)
-    print 'create CNN model ok'
+    print('create CNN model ok')
 
     # 部署相关数据
     if not os.path.exists(t_cnn_cfg.base_path):
@@ -644,17 +644,13 @@ def text_cnn_train_v2():
     论文：http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/
     :return: 
     """
-    # Parameters
-    # ==================================================
-    # 工程基础路径，兼容改名为bin的情况
-    xcpath = os.path.realpath(__file__).split('xcspam/')[0] + 'xcspam'
-    temp_xcpath = xcpath + '/bin'
-    if os.path.exists(temp_xcpath):
-        xcpath = temp_xcpath
-    cp_dir_path = xcpath + '/data/tf_anti_text_v2/'
+
+    cp_dir_path = 'data/ad1/'
+
+
 
     # Data loading params
-    tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
+    tf.flags.DEFINE_float("dev_sample_percentage", .5, "Percentage of the training data to use for validation")
     # 广告文本路径
     tf.flags.DEFINE_string("positive_data_file", cp_dir_path + "ad.pos", "Data source for the positive data.")
     # 非广告文本路径
@@ -872,9 +868,10 @@ def batch_iter_v2(data, batch_size, num_epochs, shuffle=True):
             yield shuffled_data[start_index:end_index]
 
 
-def clean_chinese_str(string):
+def clean_chinese_str(s):
     out = ''
-    mystr = string.decode('utf-8')
+    #mystr = string.decode('utf-8')
+    mystr = s
     mystr = mystr[:100]
     for letter in mystr:
         out += letter + ' '
@@ -940,10 +937,10 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'anti_text':
 
         test_text = '蜘蛛侠系列电影全有 需要的宝宝加我vx17856764520 秒回'
-        print tf_anti_text_v2(test_text)
+        print(tf_anti_text_v2(test_text))
 
         test_text = '有需要口红的小姐姐可以加我vx:xxl1113940471'
-        print tf_anti_text_v2(test_text)
+        print(tf_anti_text_v2(test_text))
 
         test_text = '想要这个微信wqzlpyouyi99谢谢啊'
-        print tf_anti_text_v2(test_text)
+        print(tf_anti_text_v2(test_text))
