@@ -445,7 +445,7 @@ v2_graph = ''
 v2_vocab_processor = ''
 
 
-def tf_anti_text_v2(raw_text_ori):
+def tf_anti_text_v2(raw_text_ori, data_path):
     """
     使用新模型的文本检测，暂时只支持广告
     输入假设为unicode
@@ -463,7 +463,11 @@ def tf_anti_text_v2(raw_text_ori):
         if not os.path.exists(xcpath):
             xcpath = os.path.abspath(__file__).split('rnn_anti_text.py')[0] + '..'
         cp_dir_path = xcpath + '/data/tf_anti_text_v2/checkpoints'
+
         vocab_path = os.path.join(cp_dir_path, "..", "vocab")
+
+        cp_dir_path = data_path
+
         v2_vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
 
         # checkpoint_file = tf.train.latest_checkpoint(cp_dir_path)
@@ -471,7 +475,7 @@ def tf_anti_text_v2(raw_text_ori):
         checkpoint_file = cp_dir_path + '/model-9600'
         session_conf = tf.ConfigProto(
             allow_soft_placement=True,
-            log_device_placement=False)
+            log_device_placement=True)
         v2_session = tf.Session(config=session_conf)
         v2_graph = v2_session.graph
         saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
