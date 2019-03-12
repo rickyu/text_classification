@@ -2,4 +2,6 @@
 *.swp
 .ipynb_checkpoints/
 var/
+runs/
 __pycache__
+*.log
