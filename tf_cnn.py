@@ -686,7 +686,7 @@ def text_cnn_train_v2():
     # Misc Parameters
     # 当没有gpu时，允许tf跑在cpu上
     tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
-    tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
+    tf.flags.DEFINE_boolean("log_device_placement", True, "Log placement of ops on devices")
 
     flags = tf.flags.FLAGS
     print("\nParameters:")
